@@ -569,6 +569,14 @@ function makeFrame(char,state,phase=0,variant=0){
  if(hurtState){nearElbow={x:43,y:48};nearHand={x:42,y:34}}
  segment({x:44+lean,y:shoulder.y+3},nearElbow,9,pal.mid);segment(nearElbow,nearHand,8,pal.cloth);box(nearHand.x-5,nearHand.y-7,8,4,pal.shade);hand(nearHand.x,nearHand.y,!(casting&&(char==='gojo'||char==='sukuna')));
  if(casting&&char==='megumi'){hand(nearHand.x-6,nearHand.y+2,false);box(nearHand.x-2,nearHand.y-3,6,2,pal.skinLight)}
+ if(char==='custom'){
+  const style=started&&p.char==='custom'?Number(p.customHairStyle)||0:Number(customDraft.hairStyle)||0;
+  const hx=head.x-11,hy=head.y-15;
+  if(style===1){box(hx+3,hy+1,22,5,pal.hair);box(hx+18,hy+4,8,7,pal.hairShade)}
+  if(style===2){box(hx-3,hy,9,23,pal.hair);box(hx+22,hy,9,20,pal.hair);box(hx+5,hy-2,18,6,pal.hairLight)}
+  if(style===3){box(hx+2,hy-5,24,7,pal.hair);box(hx+13,hy-8,16,5,pal.hairLight)}
+  const eye=pal.eye||'#a8d4fb';box(head.x-5,head.y-2,3,2,eye);box(head.x+6,head.y-2,3,2,eye);
+ }
  return a;
 }
 function person(x,y,char,face,state,options={}){
