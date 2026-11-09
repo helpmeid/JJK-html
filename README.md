@@ -6,6 +6,8 @@ A single-player, side-scrolling Jujutsu Kaisen fan RPG made with HTML and Canvas
 
 Download `loader.html` from this repository and open it in a browser. It fetches the latest `game.html` from the `main` branch. Internet access is needed for the loader; a downloaded `game.html` can also run on its own.
 
+Inspect a character, then choose **Begin**. You can also use A / D to select and Enter to begin.
+
 After updating, download the current loader to get checkpoint and autosave support inside the loader. Saves are kept in your browser on this device. Clearing browser storage clears the save. Existing saves from the first prototype use a separate save slot.
 
 ## Controls
@@ -35,16 +37,18 @@ Meet the instructor at the school gate, exorcise five curses, and report back. E
 
 - **Yuji:** three-hit combo with a Black Flash finisher, Divergent Fist with a delayed follow-up, and an advanced Black Flash. Connecting a combo finisher restores 10 energy.
 - **Megumi:** animated black and white Divine Dogs and Nue's lightning strikes. Techniques recover 15% faster.
-- **Gojo:** Blue pulls nearby enemies; Red launches a powerful projectile. Cast Red while Blue is still visible to create Hollow Purple. Infinity spends 18 energy to block one hit every eight seconds.
+- **Gojo:** Blue pulls nearby enemies; Red launches a powerful projectile. Cast Red while Blue is still visible to create Hollow Purple. Infinity spends 18 energy to block one hit every eight seconds. Hold Space while falling to hover for up to 1.5 seconds, using cursed energy.
 - **Sukuna:** a Cleave combo finisher, three Dismantle slashes, an explosive Divine Flame projectile, and Malevolent Shrine. Exorcisms restore eight health.
 - **Character art:** original detailed pixel sprites with 12 walking frames, three six-frame combo attacks, casting, idle, dash, jumping, falling, and hurt animations.
 - **Roster:** switch characters at lanterns through the field manual; upgrades and quest progress carry over.
+- **Wardrobe:** each character has a Signature, Field, and Awakened uniform palette. Alternate uniforms cost 80 fragments each, unlock once, and are cosmetic.
 - **School courtyard:** talk to the supervisor for your assignment and practice safely on the training dummy.
 - **Progression:** spend level-up points on advanced techniques, domains, cursed output, and reinforcement.
 - **Checkpoints:** lanterns restore health and energy, save progress, and set the rescue location.
 - **Enemies:** crawlers, brutes, spitters, and a two-phase boss with telegraphed attacks.
 - **Settings:** toggle synthesized sound effects and screen shake in the field manual.
 - **Camera:** choose wide, standard, or close framing in settings.
+- **Save backups:** use Settings to export a JSON save backup and import it on another browser or device. This also gives you a backup when browser storage is unavailable.
 - **Supplies:** start with two recovery talismans and one energy tonic. Spend fragments to restock at lanterns through the Supplies tab. Carry up to five of each.
 
 Ordinary curses return when you continue a saved session. Quest progress, the defeated story boss, opened caches, character upgrades, checkpoint, and supplies remain saved.
