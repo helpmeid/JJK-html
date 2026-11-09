@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#0b0c18">
-<title>VEILBOUND v4.0.0 · Reforged</title>
+<title>VEILBOUND v4.0.1 · Reforged</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='13' fill='%230c1022'/%3E%3Ccircle cx='32' cy='32' r='25' fill='none' stroke='%23e665a9' stroke-width='4'/%3E%3Cpath d='M17 17v22q0 9 11 9M39 17v31' stroke='%23ffffff' stroke-width='8' fill='none'/%3E%3C/svg%3E">
 <style>
 :root{--bg:#0b0d1b;--panel:#171a2c;--muted:#a8aabe;--ink:#f4edf9;--a:#b77eff;--edge:#46415e}
@@ -33,7 +33,7 @@ button,input,select{font:inherit}button{background:#34264e;border:1px solid #8b6
 <script>
 'use strict';
 const $=id=>document.getElementById(id),cv=$('game'),ctx=cv.getContext('2d'),keys={},SCALE=1,W=1280,H=720,G=585,WIDTH=3600;
-const VER='4.0.0',STORE='jjk-veilbound-reforged-v4';
+const VER='4.0.1',STORE='jjk-veilbound-reforged-v4';
 const PEOPLE={
 yuji:{name:'Yuji Itadori',role:'THE VESSEL',tone:'#e693a6',hair:'#dc8ca2',suit:'#263347',aura:'#ff6682',skill:'Divergent Fist',ultimate:'Black Flash'},
 megumi:{name:'Megumi Fushiguro',role:'TEN SHADOWS',tone:'#e5ae94',hair:'#17263b',suit:'#253954',aura:'#8b9efc',skill:'Divine Dogs',ultimate:'Chimera Shadow'},
@@ -79,7 +79,7 @@ let custom={...customDefaults},selected='yuji',profiles={},player=null,chapter=0
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const rng=n=>{let x=Math.sin(n*127.1+311.7)*43758.5453;return x-Math.floor(x)};
 const setNotice=t=>{$('notice').textContent=t;$('notice').classList.add('on');notification=3.4};
-function fresh(id){return {id,chapter:0,mission:0,hp:125,ce:0,maxHp:125,level:1,xp:0,skillPoints:0,unlocks:{dash:false,technique:false,ultimate:false,airStep:false,control:false},stats:{kills:0,cache:0,playSeconds:0},side:{},hairStyle:0,custom:id==='custom'?{...custom}:null,x:170,y:G-86,dead:false,finished:false}}
+function fresh(id){return {id,chapter:0,mission:0,hp:125,ce:0,maxHp:125,level:1,xp:0,skillPoints:0,unlocks:{dash:false,technique:false,ultimate:false,airStep:false,control:false},stats:{kills:0,cache:0,playSeconds:0},fragments:0,sideStats:{kills:0,collect:0},side:{},hairStyle:0,custom:id==='custom'?{...custom}:null,x:170,y:G-86,dead:false,finished:false}}
 function save(){
  if(!player)return;
  profiles[player.id]={...player,chapter,mission};
@@ -165,7 +165,7 @@ function begin(id,restart){
 }
 function generateWorld(){
  const a=chapterData(),seed=chapter*125+Object.keys(PEOPLE).indexOf(player.id)*57;
- world={enemies:[],items:[],particles:[],platforms:[],boss:null,ambush:false,defend:0,chapterKills:0,chapterHits:0,chapterCollected:0};
+ world={enemies:[],items:[],particles:[],platforms:[],boss:null,ambush:false,defend:0,chapterKills:0,chapterHits:0,chapterCollected:0};player.sideStats={kills:0,collect:0};
  for(let i=0;i<9;i++)world.platforms.push({x:260+i*360,y:G-95-(i%3)*45,w:125+(i%2)*35});
  for(let i=0;i<7;i++)world.items.push({x:420+i*420,y:G-26,taken:false});
  for(let i=0;i<12;i++)spawnEnemy(420+i*240,i%4===0?'heavy':'curse',i+seed);
@@ -185,12 +185,12 @@ function missionInfo(){
 }
 function advance(){
  mission++;
- if(mission>=6){if(chapter===4){player.finished=true;player.mission=5;save();showEnding();return}chapter++;mission=0;player.chapter=chapter;player.mission=mission;player.x=160;player.y=G-86;player.maxHp+=16;player.hp=player.maxHp;player.ce=75;player.skillPoints++;generateWorld();save();showChapter(true);return}
+ if(mission>=6){if(chapter===4){player.finished=true;player.mission=5;save();showEnding();return}chapter++;mission=0;player.chapter=chapter;player.mission=mission;player.x=160;player.y=G-86;player.maxHp+=16;player.hp=player.maxHp;player.ce=75;player.skillPoints++;player.fragments=(player.fragments||0)+120;generateWorld();save();showChapter(true);return}
  player.mission=mission;world.chapterKills=0;world.chapterHits=0;world.chapterCollected=0;world.ambush=false;world.items.forEach(x=>x.taken=false);
  if(mission===4)spawnEnemy(2450,'elite',200+chapter);
  if(mission===5){world.enemies=world.enemies.filter(e=>!e.dead&&e.type!=='elite');spawnBoss()}
  player.x=clamp(player.x,120,WIDTH-250);
- player.xp+=100+chapter*45;if(player.xp>=player.level*200){player.xp=0;player.level++;player.skillPoints++;player.maxHp+=12;player.hp=player.maxHp;setNotice('LEVEL UP · +1 SKILL POINT')}else setNotice('MISSION COMPLETE · + XP');
+ player.fragments=(player.fragments||0)+40+chapter*20;player.xp+=100+chapter*45;if(player.xp>=player.level*200){player.xp=0;player.level++;player.skillPoints++;player.maxHp+=12;player.hp=player.maxHp;setNotice('LEVEL UP · +1 SKILL POINT')}else setNotice('MISSION COMPLETE · + XP');
  save();updateHUD();
 }
 function checkMission(){
@@ -214,12 +214,12 @@ function showJournal(){
  {name:'Lost Relics',target:4,kind:'collect',reward:75},
  {name:'Frontier Scout',target:2600,kind:'distance',reward:90}
  ];
- const side=options.map((q,i)=>{const id=chapter+':'+i,claimed=player.side[id],value=q.kind==='kills'?world.chapterKills:q.kind==='collect'?world.chapterCollected:player.x,ready=value>=q.target;return '<div class="mission '+(claimed?'done':'')+'"><div><strong>'+q.name+'</strong><small>Optional · '+Math.min(value,q.target)+' / '+q.target+' · +'+q.reward+' fragments</small></div><button data-claim="'+i+'" '+(!ready||claimed?'disabled':'')+'>'+(claimed?'Claimed':'Claim')+'</button></div>'}).join('');
+ const side=options.map((q,i)=>{const id=chapter+':'+i,claimed=player.side[id],value=q.kind==='kills'?(player.sideStats?.kills||0):q.kind==='collect'?(player.sideStats?.collect||0):player.x,ready=value>=q.target;return '<div class="mission '+(claimed?'done':'')+'"><div><strong>'+q.name+'</strong><small>Optional · '+Math.min(value,q.target)+' / '+q.target+' · +'+q.reward+' fragments</small></div><button data-claim="'+i+'" '+(!ready||claimed?'disabled':'')+'>'+(claimed?'Claimed':'Claim')+'</button></div>'}).join('');
  const tabs='<div class="tabs"><button class="active" id="tabJournal">Missions</button><button id="tabSkills">Skill tree</button><button id="tabRoster">Sorcerers</button><button id="tabUpdates">Updates</button></div>';
  present('<div class="eyebrow">FIELD MANUAL · '+esc(p.name)+'</div><h2>Journey & Missions</h2>'+tabs+'<div class="two"><div><div class="card"><div class="eyebrow">CURRENT CHAPTER</div><h2 class="chapter">'+esc(a.era)+'</h2><p>'+esc(a.text)+'</p><div class="pill">'+(chapter+1)+' / 5 chapters</div></div><div class="rows"><h3>Required missions</h3>'+MISSION_TYPES.map((m,i)=>'<div class="mission '+(i<mission?'done':i===mission?'current':'locked')+'"><div><strong>'+(i+1)+'. '+['Training','Combat Trial','Explore','Evidence Hunt','Elite Ambush','Story Boss'][i]+'</strong><small>'+esc(i===mission?info[1]:'Mission '+(i+1))+'</small></div><span>'+(i<mission?'✓':i===mission?'ACTIVE':'LOCKED')+'</span></div>').join('')+'</div></div><div><h3>Optional assignments</h3><div class="rows">'+side+'</div><h3>Life chronicle</h3><div class="timeline">'+ARCS[player.id].map((v,i)=>'<div class="'+(i===chapter?'selected':'')+'"><strong>'+esc(v.era)+'</strong><small style="display:block;color:#b8accd">'+esc(v.place)+'</small></div>').join('')+'</div></div></div><div class="btnline"><button class="primary" id="backGame">RETURN TO GAME</button><button id="backSelection">CHARACTER SELECT</button></div>');
  $('backGame').onclick=hideModal;$('backSelection').onclick=()=>{save();renderTitle()};
  $('tabSkills').onclick=showSkills;$('tabRoster').onclick=showRoster;$('tabUpdates').onclick=showUpdates;
- document.querySelectorAll('[data-claim]').forEach(btn=>btn.onclick=()=>{const i=Number(btn.dataset.claim),id=chapter+':'+i;player.side[id]=true;player.skillPoints+=i===2?1:0;save();showJournal();setNotice('SIDE QUEST REWARD CLAIMED')});
+ document.querySelectorAll('[data-claim]').forEach(btn=>btn.onclick=()=>{const i=Number(btn.dataset.claim),id=chapter+':'+i;player.side[id]=true;player.fragments=(player.fragments||0)+[60,75,90][i];player.skillPoints+=i===2?1:0;save();showJournal();setNotice('SIDE QUEST REWARD CLAIMED')});
 }
 function showSkills(){
  ui='skills';const options=[['control','Cursed Energy Control','Unlock cursed-energy regeneration',1,1],['dash','Cursed Dash','Shift: evade incoming attacks',1,2],['technique','Innate Technique','K: unleash your signature technique',2,2],['airStep','Air Step','Jump a second time in midair',2,3],['ultimate','Maximum Technique','L: a powerful area attack',3,4]];
@@ -238,7 +238,7 @@ function showPause(){ui='pause';present('<div class="eyebrow">VEILBOUND REFORGED
 function interact(){
  if(!playing||paused)return;
  const found=world.items.find(it=>!it.taken&&Math.abs(it.x-player.x)<75);
- if(found){found.taken=true;world.chapterCollected++;player.stats.cache++;player.ce=clamp(player.ce+15,0,100);setNotice('CURSED RELIC SECURED');checkMission();return}
+ if(found){found.taken=true;world.chapterCollected++;player.stats.cache++;player.sideStats??={kills:0,collect:0};player.sideStats.collect++;player.ce=clamp(player.ce+15,0,100);setNotice('CURSED RELIC SECURED');checkMission();return}
  setNotice('Move closer to a glowing relic to collect it');
 }
 function punch(){
@@ -252,7 +252,7 @@ function damage(e,n){
  if(e.dead)return;
  e.hp-=n;e.stun=.24;e.x=clamp(e.x+player.face*26,20,WIDTH-50);
  for(let i=0;i<12;i++)world.particles.push({x:e.x+18,y:e.y+20,vx:(Math.random()-.5)*280,vy:-Math.random()*230,t:.4,color:personFor(player.id).aura});
- if(e.hp<=0){e.dead=true;world.chapterKills++;player.stats.kills++;player.xp+=25;
+ if(e.hp<=0){e.dead=true;world.chapterKills++;player.stats.kills++;player.sideStats??={kills:0,collect:0};player.sideStats.kills++;player.xp+=25;
   if(e.type==='elite')world.ambush=true;
   if(e.type==='boss')setNotice('STORY BOSS DEFEATED · '+e.name);
   if(player.xp>=player.level*165){player.xp=0;player.level++;player.maxHp+=8;player.hp=player.maxHp;player.skillPoints++;setNotice('LEVEL '+player.level+' · +1 SKILL POINT')}
@@ -309,7 +309,7 @@ function step(dt){
   }
  }
  if(missionType()==='ambush'&&!world.enemies.some(e=>e.type==='elite'&&!e.dead)&&!world.ambush)spawnEnemy(2500,'elite',311);
- if(missionType()==='eliminate'&&world.enemies.filter(e=>!e.dead&&e.type!=='boss').length<4){for(let i=0;i<5;i++)spawnEnemy(clamp(player.x+350+i*90,320,WIDTH-200),'curse',340+i)}
+ if(world.enemies.filter(e=>!e.dead&&e.type!=='boss'&&e.type!=='elite').length<4){for(let i=0;i<5;i++)spawnEnemy(clamp(player.x+350+i*90,320,WIDTH-200),'curse',340+i)}
  for(const part of world.particles){part.x+=part.vx*dt;part.y+=part.vy*dt;part.vy+=340*dt;part.t-=dt}
  world.particles=world.particles.filter(x=>x.t>0).slice(-400);
  notification=Math.max(0,notification-dt);if(notification===0)$('notice').classList.remove('on');
@@ -319,7 +319,7 @@ function updateHUD(){
  if(!playing)return;const who=personFor(player.id),a=chapterData(),q=missionInfo();
  $('heroName').textContent=who.name+' · Lv '+player.level;$('chapterName').textContent=a.era+' · '+a.place;
  $('hpBar').style.width=clamp(player.hp/player.maxHp*100,0,100)+'%';$('ceBar').style.width=player.ce+'%';
- $('vitals').textContent=Math.ceil(player.hp)+' HP · '+Math.floor(player.ce)+' CE · '+player.skillPoints+' points';
+ $('vitals').textContent=Math.ceil(player.hp)+' HP · '+Math.floor(player.ce)+' CE · '+player.skillPoints+' points · '+(player.fragments||0)+' fragments';
  $('questTitle').textContent=q[0];$('questDesc').textContent=q[1];$('questProgress').textContent=q[2]+' · MISSION '+(mission+1)+'/6';
 }
 function renderBackground(){
