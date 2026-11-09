@@ -18,8 +18,8 @@ After updating, download the current loader to get checkpoint and autosave suppo
 | Space / W / up arrow | Jump; press again in the air to double jump |
 | S + Space | Drop through a rooftop |
 | Shift | Dash dodge; uses 8 cursed energy |
-| J | Strike; hold to chain the three-hit combo |
-| K | Character technique |
+| J or left mouse | Strike; hold to chain the three-hit combo |
+| K or right mouse | Character technique |
 | R | Advanced technique, after unlocking |
 | L | Domain Expansion, after unlocking |
 | E | Talk, open a cache, or rest at a lantern |
@@ -30,6 +30,7 @@ After updating, download the current loader to get checkpoint and autosave suppo
 | Escape | Pause / resume |
 
 Touch controls are available on devices with a coarse pointer.
+You can also click the hotbar to cast. Mouse attacks face toward the cursor.
 
 ## The journey
 
