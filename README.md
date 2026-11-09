@@ -4,7 +4,7 @@ A single-player, side-scrolling Jujutsu Kaisen fan RPG made with HTML and Canvas
 
 ## Play
 
-Download `loader.html` from this repository and open it in a browser. It fetches the latest `game.html` from the `main` branch. Internet access is needed for the loader; a downloaded `game.html` can also run on its own.
+Download `jjkloader.html` from this repository and open it in a browser. It fetches the latest `game.html` from the `main` branch. Internet access is needed for the loader; a downloaded `game.html` can also run on its own.
 
 Inspect a character, then choose **Begin**. You can also use A / D to select and Enter to begin.
 
