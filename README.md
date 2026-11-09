@@ -36,10 +36,11 @@ You can also click the hotbar to cast. Mouse attacks face toward the cursor.
 
 Meet the instructor at the school gate, exorcise five curses, and report back. Explore east through the grove and city to reach the sealed shrine. Defeat the Veilkeeper to break the veil. Six hidden caches reward platform exploration.
 
-- **Yuji:** three-hit combo with a Black Flash finisher, Divergent Fist with a delayed follow-up, and an advanced Black Flash. Connecting a combo finisher restores 10 energy.
-- **Megumi:** animated black and white Divine Dogs and Nue's lightning strikes. Techniques recover 15% faster.
-- **Gojo:** Blue pulls nearby enemies; Red launches a powerful projectile. Cast Red while Blue is still visible to create Hollow Purple. Infinity spends 18 energy to block one hit every eight seconds. Hold Space while falling to hover for up to 1.5 seconds, using cursed energy.
-- **Sukuna:** a Cleave combo finisher, three Dismantle slashes, an explosive Divine Flame projectile, and Malevolent Shrine. Exorcisms restore eight health.
+- **Yuji:** three-hit combo with a Black Flash finisher, a tracking delayed impact from Divergent Fist, and an advanced Black Flash that lunges into range. Connecting a combo finisher restores 10 energy. His domain also strengthens outgoing damage.
+- **Megumi:** homing black and white Divine Dogs and Nue's repeated lightning strikes. Techniques recover 15% faster. Chimera Shadow Garden periodically summons additional shadow dogs.
+- **Gojo:** Blue creates a lasting gravity well; Red repels the target and nearby curses. Cast Red while Blue is still visible to charge and launch a piercing Hollow Purple. Infinity spends 18 energy to block one hit every eight seconds. Hold Space while falling to hover for up to 1.5 seconds, using cursed energy.
+- **Sukuna:** a Cleave combo finisher, three piercing Dismantle slashes, Divine Flame with an explosive impact and lingering ground fire, and Malevolent Shrine. Exorcisms restore eight health.
+- **Bottom HUD:** health, energy, character status, techniques, supplies, quest summary, menus, boss health, and touch controls are grouped in a centered bottom dock. Interaction prompts and notifications appear above it.
 - **Character art:** original detailed pixel sprites with 12 walking frames, three six-frame combo attacks, casting, idle, dash, jumping, falling, and hurt animations.
 - **Roster:** switch characters at lanterns through the field manual; upgrades and quest progress carry over.
 - **Wardrobe:** each character has a Signature, Field, and Awakened uniform palette. Alternate uniforms cost 80 fragments each, unlock once, and are cosmetic.
