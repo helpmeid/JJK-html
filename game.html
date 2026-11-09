@@ -116,8 +116,8 @@ function drawTrainingDummy(e){const x=e.x+e.w/2,y=e.y+e.h;const flash=e.hurt>0;r
 
 function interact(){const shrine=shrines.find(s=>Math.abs(p.x-s.x)<100&&Math.abs(p.y+p.h-groundY(s.x))<100);if(shrine){p.hp=maxHP();p.ce=100;p.checkpoint=shrine.x;if(shrine.x===290){openInstructorDialogue();save();return}else say('Rested at '+shrine.name+'. Checkpoint saved.');burst(shrine.x,groundY(shrine.x)-40,'#96ead2',35);save();return}const chest=chests.find(v=>!opened.includes(v.id)&&Math.abs(p.x-v.x)<85&&Math.abs(p.y+p.h-v.y)<85);if(chest){opened.push(chest.id);p.coins+=40;reward(65);p.hp=Math.min(maxHP(),p.hp+35);burst(chest.x,chest.y-15,'#ffd68a',30);say('Hidden cache · +40 fragments · +65 XP · health restored');tone(900,.2);save();return}say('Find a lantern, the instructor, or a hidden cache.')}
 function reward(amount){p.xp+=amount;while(p.xp>=p.level*80){p.xp-=p.level*80;p.level++;p.points++;p.hp=maxHP();p.ce=100;say('LEVEL '+p.level+' · +1 technique point. Open Tab to upgrade.');burst(p.x+17,p.y+30,'#ffe5a6',35);tone(1000,.25)}}
-function damage(e,amount,knock=0,color=CAST[p.char].color){if(e.dead)return;amount=Math.round(amount*(1+p.power*.15)*(domainTime>0&&p.char==='yuji'?1.2:1));e.hp-=amount;e.hurt=.18;effects.push({type:'impact',x:e.x+e.w/2,y:e.y+e.h/2,t:.14,max:.14,color});e.stun=Math.max(e.stun,e.type==='boss'?.1:.25);if(knock&&e.type!=='dummy')moveHorizontal(e,knock);float(amount,e.x+e.w/2,e.y-10,color);burst(e.x+e.w/2,e.y+e.h/2,color,12);shake=Math.max(shake,4);hitStop=.035;tone(150,.055,'triangle');if(e.type==='dummy'){e.hp=e.max;e.stun=0;return}if(e.hp<=0){e.dead=true;kills++;if(p.char==='sukuna'){p.hp=Math.min(maxHP(),p.hp+8);float('+8 HP',p.x,p.y-25,'#e6bcb6')}p.coins+=e.type==='boss'?200:8;reward(e.type==='boss'?500:e.type==='brute'?55:35);burst(e.x+e.w/2,e.y+e.h/2,color,35,260);if(e.type==='boss'&&!e.trial){bossDead=true;quest=4;domainTime=0;shots=[];say('VEIL LIFTED · Cursed Gauntlet unlocked in the journal.');save()}else if(quest===1&&kills===5)say('Assignment ready. Return to the instructor at the school gate.')}}
-function resolveMelee(strike){const black=p.char==='yuji'&&strike.combo===2,cleave=p.char==='sukuna'&&strike.combo===2;effects.push({type:'slash',x:p.x+17,y:p.y+30,dir:strike.face,t:.22,max:.22,color:black?'#ff3159':cleave?'#ffb8b1':'#fff1df',size:70+strike.combo*10});let connected=false;for(const e of enemies)if(!e.dead&&(e.x-p.x)*strike.face>-25&&(e.x-p.x)*strike.face<100&&Math.abs(e.y+e.h/2-p.y-35)<85){damage(e,black?55:cleave?60:22+strike.combo*9,strike.face*(strike.combo===2?40:12));connected=true}if(connected&&p.char==='yuji'&&strike.combo===2){effects.push({type:'blackflash',x:p.x+17+strike.face*60,y:p.y+30,t:.3,max:.3,color:'#ff4869'});hitStop=.06;shake=10;p.ce=Math.min(100,p.ce+10);float('+10 CE',p.x,p.y-24,'#a2e5ec')}if(connected&&cleave)effects.push({type:'cleave',x:p.x+17+strike.face*55,y:p.y+30,t:.25,max:.25,color:'#ffb2ac'});tone(220+strike.combo*80,.06,'sawtooth')}
+function damage(e,amount,knock=0,color=CAST[p.char].color){if(e.dead)return;amount=Math.round(amount*(1+p.power*.15)*(domainTime>0&&p.char==='yuji'?1.2:1));e.hp-=amount;e.hurt=.18;effects.push({type:'impact',x:e.x+e.w/2,y:e.y+e.h/2,t:.14,max:.14,color});e.stun=Math.max(e.stun,e.type==='boss'?.1:.25);if(knock&&e.type!=='dummy')moveHorizontal(e,knock);float(amount,e.x+e.w/2,e.y-10,color);burst(e.x+e.w/2,e.y+e.h/2,color,12);shake=Math.max(shake,4);hitStop=.035;cinematicHit(e.x+e.w/2,e.y+e.h/2,color,false);tone(150,.055,'triangle');if(e.type==='dummy'){e.hp=e.max;e.stun=0;return}if(e.hp<=0){e.dead=true;kills++;if(p.char==='sukuna'){p.hp=Math.min(maxHP(),p.hp+8);float('+8 HP',p.x,p.y-25,'#e6bcb6')}p.coins+=e.type==='boss'?200:8;reward(e.type==='boss'?500:e.type==='brute'?55:35);burst(e.x+e.w/2,e.y+e.h/2,color,35,260);if(e.type==='boss'&&!e.trial){bossDead=true;quest=4;domainTime=0;shots=[];say('VEIL LIFTED · Cursed Gauntlet unlocked in the journal.');save()}else if(quest===1&&kills===5)say('Assignment ready. Return to the instructor at the school gate.')}}
+function resolveMelee(strike){const black=p.char==='yuji'&&strike.combo===2,cleave=p.char==='sukuna'&&strike.combo===2;effects.push({type:'slash',x:p.x+17,y:p.y+30,dir:strike.face,t:.22,max:.22,color:black?'#ff3159':cleave?'#ffb8b1':'#fff1df',size:70+strike.combo*10});let connected=false;for(const e of enemies)if(!e.dead&&(e.x-p.x)*strike.face>-25&&(e.x-p.x)*strike.face<100&&Math.abs(e.y+e.h/2-p.y-35)<85){damage(e,black?55:cleave?60:22+strike.combo*9,strike.face*(strike.combo===2?40:12));connected=true}if(connected&&p.char==='yuji'&&strike.combo===2){effects.push({type:'blackflash',x:p.x+17+strike.face*60,y:p.y+30,t:.3,max:.3,color:'#ff4869'});hitStop=.09;shake=12;cinematicHit(p.x+17+strike.face*60,p.y+30,'#ff3159',true);p.ce=Math.min(100,p.ce+10);float('+10 CE',p.x,p.y-24,'#a2e5ec')}if(connected&&cleave){cinematicHit(p.x+17+strike.face*55,p.y+30,'#ffb2ac',true)}if(connected&&cleave)effects.push({type:'cleave',x:p.x+17+strike.face*55,y:p.y+30,t:.25,max:.25,color:'#ffb2ac'});tone(220+strike.combo*80,.06,'sawtooth')}
 function attackBase(kind){if(paused||p.hurtTime>0)return;const cast=CAST[p.char];if(kind===0){if(p.cd>0||p.castTime>.2)return;p.combo=p.comboTimer>0?(p.combo+1)%3:0;p.comboTimer=.9;p.cd=p.combo===2?.42:.22;p.attack=.28;p.castTime=0;pendingStrikes.push({delay:.095,combo:p.combo,face:p.face});return}const advanced=kind===2,domain=kind===3,cost=domain?85:advanced?38:24,key=domain?'dcd':advanced?'rcd':'scd';if(advanced&&!p.advanced||domain&&!p.domain){say('Unlock this in the technique tree. Press Tab.');return}if(p[key]>0){say('Technique recovering · '+Math.ceil(p[key])+'s');return}if(p.ce<cost){say('Not enough cursed energy. Let it regenerate.');return}p.ce-=cost;pendingStrikes=[];p[key]=(domain?28:advanced?7:3)*(p.char==='megumi'&&!domain?.85:1);p.attack=0;p.castTime=.55;tone(domain?100:600,domain?.7:.25,'sine');if(domain){domainTime=6;shake=12;effects.push({type:'domain',x:p.x+17,y:p.y+30,t:1.5,max:1.5,color:cast.color});say(cast.domain.toUpperCase());for(const e of enemies)if(!e.dead&&Math.abs(e.x-p.x)<900){damage(e,180,0,cast.color);e.stun=e.type==='boss'?(p.char==='gojo'?1.8:1):5}return}if(p.char==='sukuna'){if(advanced){effects.push({type:'flamecast',x:p.x+17+p.face*45,y:p.y+28,t:.65,max:.65,color:'#ffb36b'});shots.push({type:'flame',x:p.x+17,y:p.y+28,vx:p.face*600,vy:0,t:1.5,owner:'player',damage:140,color:'#ff9f57',hit:[]});say('OPEN · DIVINE FLAME')}else{for(let i=0;i<3;i++)shots.push({type:'dismantle',x:p.x+17+p.face*i*12,y:p.y+16+i*12,vx:p.face*(700+i*35),vy:0,t:1,owner:'player',damage:40,color:'#ffb8b1',hit:[]});tone(650,.1,'sawtooth')}}else if(p.char==='yuji'){const reach=advanced?210:140;effects.push({type:advanced?'blackflash':'fist',x:p.x+17+p.face*55,y:p.y+30,dir:p.face,t:.5,max:.5,color:cast.color,size:reach});for(const e of enemies)if(!e.dead&&(e.x-p.x)*p.face>-20&&(e.x-p.x)*p.face<reach&&Math.abs(e.y-p.y)<110)damage(e,advanced?180:75,p.face*70);shake=advanced?13:7;if(!advanced)effects.push({type:'echo',x:p.x+p.face*80,y:p.y+30,t:.45,max:.45,dir:p.face,color:'#a8e5ff',fired:false})}else if(p.char==='megumi'){if(advanced){effects.push({type:'nue',x:p.x+17,y:p.y-160,t:1,max:1,color:'#c3a9ff'});for(const e of enemies)if(!e.dead&&Math.abs(e.x-p.x)<520){effects.push({type:'lightning',x:e.x+e.w/2,y:e.y+e.h/2,t:.45,max:.45,color:'#e1c8ff'});damage(e,120,0,cast.color)}}else{for(const offset of [0,.18])shots.push({type:'dog',fur:offset===0?'#d5d3e6':'#282d47',x:p.x+17,y:p.y+45,vx:p.face*570,vy:0,t:1.2+offset,owner:'player',damage:62,color:cast.color,hit:[]});say('Divine Dogs · hunt')}}else if(advanced){const combined=effects.some(f=>f.type==='blue'&&f.t>0);if(combined){effects=effects.filter(f=>f.type!=='blue');say('IMAGINARY TECHNIQUE · HOLLOW PURPLE');shake=12}const color=combined?'#bd8cff':'#ff5c79';effects.push({type:combined?'purple':'red',x:p.x+17+p.face*40,y:p.y+30,t:.6,max:.6,color});shots.push({type:combined?'purple':'red',x:p.x+17,y:p.y+28,vx:p.face*(combined?620:740),vy:0,t:combined?1.8:1.2,owner:'player',damage:combined?240:150,color,hit:[]})}else{const x=Math.max(0,Math.min(7500,p.x+p.face*230));effects.push({type:'blue',x,y:p.y+30,t:1.4,max:1.4,color:'#68d6ff'});for(const e of enemies)if(!e.dead&&Math.abs(e.x-x)<240&&Math.abs(e.y-p.y)<160){damage(e,80,(x-e.x)*.55,cast.color);e.stun=1}}}
 let shadowSummonTimer=0;
 function nearestTechniqueTarget(x,y,range,ignore=[]){return enemies.filter(e=>!e.dead&&Math.abs(e.x+e.w/2-x)<range&&Math.abs(e.y+e.h/2-y)<240&&!ignore.includes(e.id)).sort((a,b)=>(a.type==='dummy'?10000:0)+Math.hypot(a.x+ a.w/2-x,a.y+a.h/2-y)-((b.type==='dummy'?10000:0)+Math.hypot(b.x+b.w/2-x,b.y+b.h/2-y)))[0]}
@@ -447,7 +447,7 @@ function person(x,y,char,face,state,options={}){
  ctx.save();ctx.imageSmoothingEnabled=false;ctx.translate(Math.round(x+17),Math.round(y+70));ctx.scale(face,1);
  const height=char==='gojo'?91:char==='megumi'?88:85;
  if(!options.ghost&&state!=='jump'&&state!=='fall'&&state!=='hover'){ctx.globalAlpha=.18;ctx.fillStyle='#010614';ctx.beginPath();ctx.ellipse(0,0,23,4,0,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1}
- ctx.drawImage(frame,-height*40/108,-height,height*96/108,height);ctx.restore();
+ if(!options.ghost&&(state==='attack'||state==='dash'||state==='cast')){const energy=CAST[char]?.color||'#d5b9ec';ctx.save();ctx.globalAlpha=state==='attack'?.24:state==='dash'?.16:.12;ctx.shadowBlur=state==='attack'?18:12;ctx.shadowColor=energy;ctx.fillStyle=energy;ctx.beginPath();ctx.ellipse(0,-height*.55,24,height*.39,0,0,Math.PI*2);ctx.fill();ctx.restore()}ctx.drawImage(frame,-height*40/108,-height,height*96/108,height);if(!options.ghost&&state==='attack'){const combo=p.combo||0;ctx.save();ctx.globalCompositeOperation='screen';ctx.globalAlpha=.48;ctx.strokeStyle=CAST[char]?.color||'#ffe1ed';ctx.lineWidth=2.8;ctx.beginPath();ctx.arc(combo===1?12:20,-height*.5,combo===2?30:24,-1.2,0.9);ctx.stroke();ctx.restore()}ctx.restore();
 }
 function prepareArt(){for(const char of Object.keys(CAST)){
  const list=(state,n,variant=0)=>Array.from({length:n},(_,i)=>makeFrame(char,state,i*Math.PI*2/(state==='attack'||state==='cast'?n-1:n),variant));
@@ -456,7 +456,49 @@ function prepareArt(){for(const char of Object.keys(CAST)){
 }}
 
 let artClock=0;function previewCharacters(){if(started)return;document.querySelectorAll('[data-preview]').forEach(canvas=>{const g=canvas.getContext('2d');g.imageSmoothingEnabled=false;g.clearRect(0,0,192,216);const char=canvas.dataset.preview,phase=(artClock+Object.keys(CAST).indexOf(char)*.7)%9;let state='idle',index=Math.floor(artClock*3)%4;if(phase>4&&phase<6){state='walk';index=Math.floor(artClock*12)%12}else if(phase>=6&&phase<7){state='attack';index=Math.min(5,Math.floor((phase-6)*6))}else if(phase>=7){state='cast';index=Math.min(7,Math.floor((phase-7)*4))}const frame=sprites[char][state][index];g.drawImage(frame,8,0,192,216)})}
-function loop(t){const dt=Math.min(.033,Math.max(0,(t-last)/1000));last=t;artClock+=dt;if(paused&&noticeTime>0){noticeTime-=dt;if(noticeTime<=0)$('#notice').textContent=''}if(!started)previewCharacters();if(!paused){if(hitStop>0)hitStop-=dt;else update(dt);draw();needsRedraw=false}else if(needsRedraw){draw();needsRedraw=false}requestAnimationFrame(loop)}prepareArt();prepareSupervisor();title();if(typeof ResizeObserver!=='undefined')new ResizeObserver(readDockLayout).observe($('#combatDock'));requestAnimationFrame(loop);
+
+/* Combat polish: deterministic short-lived impact frames, ink slashes, and shock rings. */
+const cinematicHits=[];
+function cinematicHit(x,y,color,heavy=false){
+ if(!settings.shake&&!heavy) return;
+ cinematicHits.push({x,y,color,heavy,life:heavy?.25:.12,max:heavy?.25:.12,seed:(Math.random()*6.28)});
+ if(cinematicHits.length>9)cinematicHits.shift();
+}
+function drawCinematicHits(dt){
+ if(!cinematicHits.length)return;
+ const zoom=cameraZoom(),offset=worldOffsetY();
+ ctx.save();
+ for(let i=cinematicHits.length-1;i>=0;i--){
+  const h=cinematicHits[i];h.life-=dt;if(h.life<=0){cinematicHits.splice(i,1);continue}
+  const k=1-h.life/h.max,px=(h.x-cam)*zoom,py=h.y*zoom+offset;
+  if(px< -190||px>W+190)continue;
+  ctx.save();ctx.translate(px,py);ctx.rotate(h.seed*.04);
+  const power=(1-k)*(h.heavy?1:.6);
+  if(h.heavy&&k<.22){
+   ctx.globalAlpha=.18*(1-k/.22);ctx.fillStyle='#f7f3e8';ctx.fillRect(-W,-720,W*2,1440);
+   ctx.globalAlpha=.8*(1-k/.22);ctx.fillStyle='#100914';ctx.beginPath();
+   for(let n=0;n<12;n++){const a=n*Math.PI/6+h.seed*.05,r1=12,r2=260+(n%3)*70;
+    ctx.moveTo(Math.cos(a)*r1,Math.sin(a)*r1);ctx.lineTo(Math.cos(a-.042)*r2,Math.sin(a-.042)*r2);ctx.lineTo(Math.cos(a+.042)*r2,Math.sin(a+.042)*r2)}
+   ctx.fill();
+  }
+  ctx.globalAlpha=power;ctx.strokeStyle=h.color;ctx.lineCap='round';
+  for(let n=0;n<(h.heavy?18:9);n++){
+   const a=n*Math.PI/(h.heavy?9:4.5)+h.seed;
+   const r=18+k*35,reach=(h.heavy?130:55)*(1-k*.55)+(n%3)*9;
+   ctx.lineWidth=n%4===0?4:1.5;ctx.beginPath();
+   ctx.moveTo(Math.cos(a)*r,Math.sin(a)*r);
+   ctx.lineTo(Math.cos(a)*(r+reach),Math.sin(a)*(r+reach));ctx.stroke();
+  }
+  ctx.strokeStyle='#fff7f0';ctx.lineWidth=h.heavy?4:2;ctx.globalAlpha=power*.85;
+  ctx.beginPath();ctx.ellipse(0,0,16+k*(h.heavy?115:56),9+k*(h.heavy?78:35),-.25,0,Math.PI*2);ctx.stroke();
+  ctx.globalAlpha=power*.7;ctx.strokeStyle=h.color;ctx.lineWidth=2;ctx.beginPath();
+  ctx.ellipse(0,0,26+k*(h.heavy?150:74),17+k*(h.heavy?99:46),.2,0,Math.PI*2);ctx.stroke();
+  ctx.restore();
+ }
+ ctx.restore();
+}
+
+function loop(t){const dt=Math.min(.033,Math.max(0,(t-last)/1000));last=t;artClock+=dt;if(paused&&noticeTime>0){noticeTime-=dt;if(noticeTime<=0)$('#notice').textContent=''}if(!started)previewCharacters();if(!paused){if(hitStop>0)hitStop-=dt;else update(dt);draw();drawCinematicHits(dt);needsRedraw=false}else if(needsRedraw){draw();drawCinematicHits(0);needsRedraw=false}requestAnimationFrame(loop)}prepareArt();prepareSupervisor();title();if(typeof ResizeObserver!=='undefined')new ResizeObserver(readDockLayout).observe($('#combatDock'));requestAnimationFrame(loop);
 
 </script></body></html>
 
