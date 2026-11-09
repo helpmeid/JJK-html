@@ -21,6 +21,8 @@ After updating, download the current loader to get checkpoint and autosave suppo
 | R | Advanced technique, after unlocking |
 | L | Domain Expansion, after unlocking |
 | E | Talk, open a cache, or rest at a lantern |
+| 1 | Use a recovery talisman |
+| 2 | Use a cursed energy tonic |
 | Tab | Technique tree and field manual |
 | M | World map |
 | Escape | Pause / resume |
@@ -31,13 +33,21 @@ Touch controls are available on devices with a coarse pointer.
 
 Meet the instructor at the school gate, exorcise five curses, and report back. Explore east through the grove and city to reach the sealed shrine. Defeat the Veilkeeper to break the veil. Six hidden caches reward platform exploration.
 
-- **Yuji:** three-hit combo with a Black Flash finisher, Divergent Fist with a delayed follow-up, and an advanced Black Flash.
-- **Megumi:** two Divine Dogs and Nue's lightning strikes.
-- **Gojo:** Blue pulls nearby enemies; Red launches a powerful projectile.
+- **Yuji:** three-hit combo with a Black Flash finisher, Divergent Fist with a delayed follow-up, and an advanced Black Flash. Connecting a combo finisher restores 10 energy.
+- **Megumi:** animated black and white Divine Dogs and Nue's lightning strikes. Techniques recover 15% faster.
+- **Gojo:** Blue pulls nearby enemies; Red launches a powerful projectile. Cast Red while Blue is still visible to create Hollow Purple. Infinity spends 18 energy to block one hit every eight seconds.
+- **Sukuna:** a Cleave combo finisher, three Dismantle slashes, an explosive Divine Flame projectile, and Malevolent Shrine. Exorcisms restore eight health.
+- **Character art:** original detailed pixel sprites with 12 walking frames, three six-frame combo attacks, casting, idle, dash, jumping, falling, and hurt animations.
+- **Roster:** switch characters at lanterns through the field manual; upgrades and quest progress carry over.
+- **School courtyard:** talk to the supervisor for your assignment and practice safely on the training dummy.
 - **Progression:** spend level-up points on advanced techniques, domains, cursed output, and reinforcement.
 - **Checkpoints:** lanterns restore health and energy, save progress, and set the rescue location.
 - **Enemies:** crawlers, brutes, spitters, and a two-phase boss with telegraphed attacks.
 - **Settings:** toggle synthesized sound effects and screen shake in the field manual.
+- **Camera:** choose wide, standard, or close framing in settings.
+- **Supplies:** start with two recovery talismans and one energy tonic. Spend fragments to restock at lanterns through the Supplies tab. Carry up to five of each.
+
+Ordinary curses return when you continue a saved session. Quest progress, the defeated story boss, opened caches, character upgrades, checkpoint, and supplies remain saved.
 
 This is an unofficial fan project. It is not affiliated with the creators or rights holders of Jujutsu Kaisen. Some gameplay abilities and names are creative adaptations.
 
