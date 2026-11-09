@@ -50,6 +50,7 @@ Meet the instructor at the school gate, exorcise five curses, and report back. E
 - **Camera:** choose wide, standard, or close framing in settings.
 - **Save backups:** use Settings to export a JSON save backup and import it on another browser or device. This also gives you a backup when browser storage is unavailable.
 - **Supplies:** start with two recovery talismans and one energy tonic. Spend fragments to restock at lanterns through the Supplies tab. Carry up to five of each.
+- **Cursed Gauntlet:** after lifting the veil, enter a three-wave post-story combat trial from the Journal. Defeat the Veilkeeper's echo for 150 bonus fragments and 180 XP. You can leave through Settings. Defeat rescues you at your checkpoint.
 
 Ordinary curses return when you continue a saved session. Quest progress, the defeated story boss, opened caches, character upgrades, checkpoint, and supplies remain saved.
 
