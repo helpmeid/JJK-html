@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#0b0c18">
-<title>VEILBOUND v4.2.0 · Reforged</title>
+<title>VEILBOUND v4.2.1 · Reforged</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='13' fill='%230c1022'/%3E%3Ccircle cx='32' cy='32' r='25' fill='none' stroke='%23e665a9' stroke-width='4'/%3E%3Cpath d='M17 17v22q0 9 11 9M39 17v31' stroke='%23ffffff' stroke-width='8' fill='none'/%3E%3C/svg%3E">
 <style>
 :root{--bg:#0b0d1b;--panel:#171a2c;--muted:#a8aabe;--ink:#f4edf9;--a:#b77eff;--edge:#46415e}
@@ -33,7 +33,7 @@ button,input,select{font:inherit}button{background:#34264e;border:1px solid #8b6
 <script>
 'use strict';
 const $=id=>document.getElementById(id),cv=$('game'),ctx=cv.getContext('2d'),keys={},SCALE=1,W=1280,H=720,G=585,WIDTH=3600;
-const VER='4.2.0',STORE='jjk-veilbound-reforged-v4';
+const VER='4.2.1',STORE='jjk-veilbound-reforged-v4';
 const PEOPLE={
 yuji:{name:'Yuji Itadori',role:'THE VESSEL',tone:'#e693a6',hair:'#dc8ca2',suit:'#263347',aura:'#ff6682',skill:'Divergent Fist',ultimate:'Black Flash'},
 megumi:{name:'Megumi Fushiguro',role:'TEN SHADOWS',tone:'#e5ae94',hair:'#17263b',suit:'#253954',aura:'#8b9efc',skill:'Divine Dogs',ultimate:'Chimera Shadow'},
@@ -79,7 +79,7 @@ let custom={...customDefaults},selected='yuji',profiles={},player=null,chapter=0
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const rng=n=>{let x=Math.sin(n*127.1+311.7)*43758.5453;return x-Math.floor(x)};
 const setNotice=t=>{$('notice').textContent=t;$('notice').classList.add('on');notification=3.4};
-function fresh(id){return {id,chapter:0,mission:0,hp:125,ce:0,maxHp:125,level:1,xp:0,skillPoints:0,unlocks:{dash:false,technique:false,ultimate:false,airStep:false,control:false},stats:{kills:0,cache:0,playSeconds:0},vx:0,slide:0,crouch:false,stamina:100,guard:0,counter:0,fragments:0,sideStats:{kills:0,collect:0},side:{},hairStyle:0,custom:id==='custom'?{...custom}:null,x:170,y:G-86,dead:false,finished:false}}
+function fresh(id){return {id,chapter:0,mission:0,hp:125,ce:0,maxHp:125,level:1,xp:0,skillPoints:0,unlocks:{dash:false,technique:false,ultimate:false,airStep:false,control:false},stats:{kills:0,cache:0,playSeconds:0},vx:0,slide:0,crouch:false,crouchToggle:false,stamina:100,guard:0,counter:0,fragments:0,sideStats:{kills:0,collect:0},side:{},hairStyle:0,custom:id==='custom'?{...custom}:null,x:170,y:G-86,dead:false,finished:false}}
 function save(){
  if(!player)return;
  profiles[player.id]={...player,chapter,mission};
@@ -236,7 +236,7 @@ function resetTask(){
  if(mission===1)for(let i=0;i<9;i++)world.enemies.push(createFoe(530+i*310,i%3===0?'heavy':'curse'));
  if(mission===2||mission===3)for(let i=0;i<3;i++)for(let j=0;j<3;j++)world.enemies.push(createFoe(680+i*870+j*85,j===2?'heavy':'curse'));
  if(mission===5)spawnBoss();
- player.x=150;player.y=G-86;player.vy=0;player.vx=0;player.slide=0;player.crouch=false;player.stamina=100;player.counter=0;player.guard=0;
+ player.x=150;player.y=G-86;player.vy=0;player.vx=0;player.slide=0;player.crouch=false;player.crouchToggle=false;player.stamina=100;player.counter=0;player.guard=0;
  cam=0;save();
 }
 function nearby(x,range=210){return world.enemies.filter(e=>!e.dead&&e.type!=='dummy'&&Math.abs(e.x-x)<range)}
@@ -350,14 +350,14 @@ addEventListener('keydown',keyDown);addEventListener('keyup',e=>{keys[e.key.toLo
 addEventListener('blur',()=>{for(const k in keys)keys[k]=false});
 $('journalBtn').onclick=()=>showJournal();$('pauseBtn').onclick=()=>showPause();
 document.querySelectorAll('[data-hold]').forEach(b=>{b.addEventListener('pointerdown',e=>{e.preventDefault();keys[b.dataset.hold]=true;if(b.dataset.hold==='j')punch()});for(const type of ['pointerup','pointercancel','pointerleave'])b.addEventListener(type,()=>keys[b.dataset.hold]=false)});
-document.querySelectorAll('[data-press]').forEach(b=>b.addEventListener('pointerdown',e=>{e.preventDefault();const a=b.dataset.press;if(a==='jump')jump();if(a==='dash')dash();if(a==='slide')beginSlide();if(a==='crouch')player.crouch=!player.crouch;if(a==='guard')guard();if(a==='skill')useSkill();if(a==='interact')interact()}));
+document.querySelectorAll('[data-press]').forEach(b=>b.addEventListener('pointerdown',e=>{e.preventDefault();const a=b.dataset.press;if(a==='jump')jump();if(a==='dash')dash();if(a==='slide')beginSlide();if(a==='crouch')player.crouchToggle=!player.crouchToggle;if(a==='guard')guard();if(a==='skill')useSkill();if(a==='interact')interact()}));
 function step(dt){
  if(!playing||paused)return;elapsed+=dt;player.stats.playSeconds+=dt;
  player.attack=Math.max(0,(player.attack||0)-dt);player.dash=Math.max(0,(player.dash||0)-dt);player.inv=Math.max(0,(player.inv||0)-dt);player.guard=Math.max(0,(player.guard||0)-dt);player.counter=Math.max(0,(player.counter||0)-dt);
  player.stamina=clamp((player.stamina??100)+17*dt,0,100);player.ce=clamp(player.ce+(player.unlocks.control?8:2)*dt,0,100);
  const dir=(keys.d||keys.arrowright?1:0)-(keys.a||keys.arrowleft?1:0);if(dir&&player.slide<=0&&player.dash<=0)player.face=dir;
  player.slide=Math.max(0,(player.slide||0)-dt);
- const low=!!(keys.c||keys.control||keys.arrowdown||keys.s||player.crouch);
+ const low=!!(keys.c||keys.control||keys.arrowdown||keys.s||player.crouchToggle);
  player.crouch=player.slide>0||low;
  const target=player.slide>0?player.slideDir*515:player.dash>0?(player.dashDir||player.face)*780:dir*(low?100:245);
  const response=player.slide>0?3:player.dash>0?35:dir?13:9;
