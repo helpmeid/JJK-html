@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#0b0c18">
-<title>VEILBOUND v4.1.0 · Reforged</title>
+<title>VEILBOUND v4.2.0 · Reforged</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='13' fill='%230c1022'/%3E%3Ccircle cx='32' cy='32' r='25' fill='none' stroke='%23e665a9' stroke-width='4'/%3E%3Cpath d='M17 17v22q0 9 11 9M39 17v31' stroke='%23ffffff' stroke-width='8' fill='none'/%3E%3C/svg%3E">
 <style>
 :root{--bg:#0b0d1b;--panel:#171a2c;--muted:#a8aabe;--ink:#f4edf9;--a:#b77eff;--edge:#46415e}
@@ -27,13 +27,13 @@ button,input,select{font:inherit}button{background:#34264e;border:1px solid #8b6
 @media(max-width:480px){.editor{grid-template-columns:1fr}.statbox{background:#11172bef}#quest{max-width:190px}#mobile button{min-width:39px;padding:6px}}
 </style></head>
 <body><canvas id="game" tabindex="0"></canvas>
-<div id="hud"><div id="topbar"><div class="statbox identity"><div class="name" id="heroName"></div><div class="small" id="chapterName"></div><div class="meter"><b id="hpBar"></b></div><div class="meter energy"><b id="ceBar"></b></div><div class="small" id="vitals"></div></div><div class="statbox" id="quest"><div class="eyebrow">CURRENT OBJECTIVE</div><div id="questTitle" class="quest-title"></div><div id="questDesc"></div><div id="questProgress" class="progress"></div></div></div><div id="corner"><button id="journalBtn">Journal</button><button id="pauseBtn">Menu</button></div><div id="notice"></div><div id="help">A/D move · Space jump · Shift dodge · Q guard · J punch · K technique · L ultimate · E interact · Tab journal · Esc menu</div>
-<div id="mobile"><div><button data-hold="a">◀</button><button data-hold="d">▶</button><button data-press="jump">↑</button></div><div><button data-press="dash">DASH</button><button data-press="guard">GUARD</button><button data-hold="j">HIT</button><button data-press="skill">CE</button><button data-press="interact">E</button></div></div></div>
+<div id="hud"><div id="topbar"><div class="statbox identity"><div class="name" id="heroName"></div><div class="small" id="chapterName"></div><div class="meter"><b id="hpBar"></b></div><div class="meter energy"><b id="ceBar"></b></div><div class="small" id="vitals"></div></div><div class="statbox" id="quest"><div class="eyebrow">CURRENT OBJECTIVE</div><div id="questTitle" class="quest-title"></div><div id="questDesc"></div><div id="questProgress" class="progress"></div></div></div><div id="corner"><button id="journalBtn">Journal</button><button id="pauseBtn">Menu</button></div><div id="notice"></div><div id="help">A/D move · Space jump · Shift dash · C crouch/slide · Q guard · J punch · K technique · L ultimate · E interact · Tab journal · Esc menu</div>
+<div id="mobile"><div><button data-hold="a">◀</button><button data-hold="d">▶</button><button data-press="jump">↑</button></div><div><button data-press="dash">DASH</button><button data-press="slide">SLIDE</button><button data-press="crouch">CROUCH</button><button data-press="guard">GUARD</button><button data-hold="j">HIT</button><button data-press="skill">CE</button><button data-press="interact">E</button></div></div></div>
 <div id="modal"><div class="panel" id="panel"></div></div>
 <script>
 'use strict';
 const $=id=>document.getElementById(id),cv=$('game'),ctx=cv.getContext('2d'),keys={},SCALE=1,W=1280,H=720,G=585,WIDTH=3600;
-const VER='4.1.0',STORE='jjk-veilbound-reforged-v4';
+const VER='4.2.0',STORE='jjk-veilbound-reforged-v4';
 const PEOPLE={
 yuji:{name:'Yuji Itadori',role:'THE VESSEL',tone:'#e693a6',hair:'#dc8ca2',suit:'#263347',aura:'#ff6682',skill:'Divergent Fist',ultimate:'Black Flash'},
 megumi:{name:'Megumi Fushiguro',role:'TEN SHADOWS',tone:'#e5ae94',hair:'#17263b',suit:'#253954',aura:'#8b9efc',skill:'Divine Dogs',ultimate:'Chimera Shadow'},
@@ -79,7 +79,7 @@ let custom={...customDefaults},selected='yuji',profiles={},player=null,chapter=0
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const rng=n=>{let x=Math.sin(n*127.1+311.7)*43758.5453;return x-Math.floor(x)};
 const setNotice=t=>{$('notice').textContent=t;$('notice').classList.add('on');notification=3.4};
-function fresh(id){return {id,chapter:0,mission:0,hp:125,ce:0,maxHp:125,level:1,xp:0,skillPoints:0,unlocks:{dash:false,technique:false,ultimate:false,airStep:false,control:false},stats:{kills:0,cache:0,playSeconds:0},stamina:100,guard:0,counter:0,fragments:0,sideStats:{kills:0,collect:0},side:{},hairStyle:0,custom:id==='custom'?{...custom}:null,x:170,y:G-86,dead:false,finished:false}}
+function fresh(id){return {id,chapter:0,mission:0,hp:125,ce:0,maxHp:125,level:1,xp:0,skillPoints:0,unlocks:{dash:false,technique:false,ultimate:false,airStep:false,control:false},stats:{kills:0,cache:0,playSeconds:0},vx:0,slide:0,crouch:false,stamina:100,guard:0,counter:0,fragments:0,sideStats:{kills:0,collect:0},side:{},hairStyle:0,custom:id==='custom'?{...custom}:null,x:170,y:G-86,dead:false,finished:false}}
 function save(){
  if(!player)return;
  profiles[player.id]={...player,chapter,mission};
@@ -132,7 +132,44 @@ function drawPerson(g,x,y,who,size=1,pose=0){
  g.restore();g.restore();
 }
 function personFor(id){return id==='custom'?{...PEOPLE.custom,...custom,id:'custom'}:{...PEOPLE[id],id}}
-function drawPreview(){const c=$('preview');if(!c)return;const g=c.getContext('2d');c.width=480;c.height=490;g.clearRect(0,0,480,490);const p=personFor(selected);const t=performance.now()/850;const glow=g.createRadialGradient(240,200,10,240,200,220);glow.addColorStop(0,p.aura+'44');glow.addColorStop(1,'#0c0e1d00');g.fillStyle=glow;g.fillRect(0,0,480,490);g.strokeStyle=p.aura+'66';g.lineWidth=3;g.beginPath();g.arc(240,248,150,0,Math.PI*2);g.stroke();drawPerson(g,240,435+Math.sin(t)*2,p,2.45,t)}
+
+function drawPersonRefined(g,x,y,who,size=1,pose=0){
+ g.save();g.translate(x,y);g.scale(size,size);
+ const skin=who.tone||'#e7ae91',suit=who.suit||'#26344b',hair=who.hair||'#20253f',aura=who.aura||'#ae9aff';
+ const isPlayer=playing&&player&&who.id===player.id,slide=isPlayer&&player.slide>0,crouch=isPlayer&&player.crouch,dashActive=isPlayer&&player.dash>0,attack=isPlayer&&player.attack>0;
+ const running=isPlayer&&Math.abs(player.vx||0)>60,stride=running?Math.sin(pose)*17:0;
+ g.fillStyle='#0406167a';g.beginPath();g.ellipse(0,-2,slide?40:26,5,0,0,7);g.fill();
+ g.translate(0,slide?-38:crouch?-23:0);g.rotate(slide?.35:dashActive?.16:0);
+ const path=(arr,col)=>{g.beginPath();arr.forEach((p,i)=>i?g.lineTo(...p):g.moveTo(...p));g.closePath();g.fillStyle=col;g.fill();g.strokeStyle='#101222';g.lineWidth=2.5;g.stroke()};
+ for(const side of [-1,1]){const dx=slide?side*27:stride*side;path([[side*3,-48],[side*20,-48],[side*12+dx*.5,-25],[side*15+dx,-8],[side*4+dx,-5],[side*5,-27]],side===1?'#172439':'#273047');path([[side*15+dx-12,-10],[side*15+dx+7,-10],[side*15+dx+12,-2],[side*15+dx-13,-2]],'#101322')}
+ path([[-22,-92],[0,-99],[22,-92],[25,-45],[4,-38],[-23,-43]],'#101729');
+ path([[-18,-88],[-3,-91],[17,-87],[19,-47],[0,-41],[-18,-49]],suit);
+ path([[-18,-86],[-2,-82],[0,-49],[-18,-50]],'#21334c');
+ path([[7,-87],[19,-85],[19,-49],[1,-45]],'#38435d');
+ g.fillStyle='#ece6ed';g.fillRect(-3,-87,3,39);g.fillStyle=aura;g.fillRect(11,-78,6,12);
+ if(who.id==='yuji'){g.fillStyle='#bc5775';g.fillRect(-20,-90,40,10)}
+ if(who.id==='megumi'){g.fillStyle='#192638';g.fillRect(-18,-86,36,12)}
+ if(who.id==='gojo'){g.fillStyle='#dbe9f6';g.fillRect(-18,-91,36,8)}
+ if(who.id==='sukuna'){g.fillStyle='#9c4057';g.fillRect(-21,-82,7,18);g.fillRect(15,-82,7,18)}
+ const arm=attack?-24:dashActive?-15:0;
+ for(const side of [-1,1]){path([[side*18,-87],[side*30,-83],[side*34,-55+arm],[side*18,-47+arm]],suit);g.fillStyle=skin;g.beginPath();g.arc(side*29,-48+arm,7,0,7);g.fill()}
+ path([[-9,-102],[9,-102],[10,-88],[0,-82],[-10,-88]],skin);
+ path([[-18,-137],[-7,-149],[13,-143],[21,-128],[18,-108],[9,-95],[-9,-95],[-21,-111]],skin);
+ g.fillStyle='#181828';g.fillRect(-14,-127,10,3);g.fillRect(7,-127,10,3);
+ g.fillStyle=who.eyes||'#8adfff';g.fillRect(-13,-120,10,7);g.fillRect(7,-120,10,7);g.fillStyle='#151526';g.fillRect(-9,-119,3,5);g.fillRect(10,-119,3,5);
+ const spikes=who.id==='megumi'?[[-27,-134],[-24,-157],[-12,-143],[-3,-169],[7,-150],[17,-161],[22,-134],[29,-146],[23,-126],[-17,-128]]:who.id==='gojo'?[[-26,-135],[-20,-151],[-10,-145],[-2,-165],[7,-143],[16,-159],[22,-135],[29,-146],[24,-127],[-16,-130]]:[[-22,-134],[-17,-151],[-7,-143],[-3,-160],[8,-145],[16,-157],[23,-135],[26,-142],[18,-125],[-19,-128]];
+ const style=Number(who.hairStyle||0);
+ if(style===0||who.id==='gojo'||who.id==='megumi')path(spikes,hair);
+ else if(style===1)path([[-23,-132],[-20,-151],[-3,-158],[16,-151],[23,-131],[10,-124],[-9,-124]],hair);
+ else if(style===2)path([[-26,-131],[-22,-155],[3,-158],[22,-145],[25,-98],[14,-93],[12,-132],[-10,-124],[-14,-91],[-25,-94]],hair);
+ else path([[-18,-132],[-18,-149],[2,-163],[22,-155],[23,-125],[15,-117],[12,-143],[-12,-129]],hair);
+ if(who.id==='gojo')path([[-20,-126],[21,-126],[19,-115],[-19,-115]],'#151a2e');
+ if(who.id==='sukuna'){g.strokeStyle='#87354b';g.lineWidth=2;for(const side of [-1,1]){g.beginPath();g.moveTo(side*10,-122);g.lineTo(side*17,-108);g.moveTo(side*8,-104);g.lineTo(side*18,-104);g.stroke()}}
+ if(who.mark===1){g.fillStyle=aura;g.fillRect(12,-117,3,15)}if(who.mark===2){g.fillStyle=aura;g.fillRect(-3,-135,8,5)}
+ g.restore();
+}
+
+function drawPreview(){const c=$('preview');if(!c)return;const g=c.getContext('2d');c.width=480;c.height=490;g.clearRect(0,0,480,490);const p=personFor(selected);const t=performance.now()/850;const glow=g.createRadialGradient(240,200,10,240,200,220);glow.addColorStop(0,p.aura+'44');glow.addColorStop(1,'#0c0e1d00');g.fillStyle=glow;g.fillRect(0,0,480,490);g.strokeStyle=p.aura+'66';g.lineWidth=3;g.beginPath();g.arc(240,248,150,0,Math.PI*2);g.stroke();drawPersonRefined(g,240,435+Math.sin(t)*2,p,2.45,t)}
 let previewFrame=0;function previewTick(){if(ui==='title'&&$('preview'))drawPreview();previewFrame=requestAnimationFrame(previewTick)}previewTick();
 function renderTitle(){
  ui='title';playing=false;paused=true;$('hud').classList.remove('show');
@@ -166,9 +203,31 @@ function begin(id,restart){
 
 const TASK_NAMES=['The First Trial','Rescue Operation','Break the Curtain','Cursed Evidence','Defend the District','The Final Confrontation'];
 const TASK_DESCRIPTIONS=['Hit the training target 3 times, guard 2 attacks with Q, and punish 2 successfully dodged attacks.','Find the civilian near x=250 and escort them to the evacuation gate at x=3100. Protect their health.','Find 3 cursed seals and use E once the nearby defenders are defeated.','Recover 3 hidden clues with E. Each is guarded by curses.','Keep the barrier at x=1900 intact for 75 seconds as attack waves arrive.','Break the boss shield, avoid its warned strikes, and finish the fight.'];
+
+const CURSE_SPECIES=[
+ {name:'Crawler Curse',shape:0,body:'#64819b',eyes:'#fa87b7',speed:125},
+ {name:'Oni Brute',shape:1,body:'#8c536b',eyes:'#ffd19b',speed:77},
+ {name:'Veil Stalker',shape:2,body:'#506d95',eyes:'#a5bbff',speed:149},
+ {name:'Shrieking Mask',shape:3,body:'#79538e',eyes:'#efafff',speed:112},
+ {name:'Spore Phantom',shape:4,body:'#628a76',eyes:'#d0f7ab',speed:104}
+];
+function curseKind(x,type){if(type==='dummy')return {name:'Training Spirit',shape:2,body:'#668889',eyes:'#92f3ee',speed:0};if(type==='boss')return {name:chapterData().boss,shape:1,body:'#844664',eyes:'#ffb2cd',speed:94};if(type==='heavy')return CURSE_SPECIES[1];return CURSE_SPECIES[Math.abs(Math.floor(x/71)+chapter*3+Object.keys(PEOPLE).indexOf(player.id))%5]}
+function drawCurse(e){
+ const kind=e.kind||curseKind(e.x,e.type);ctx.save();ctx.translate(e.x+e.w/2,e.y+e.h);
+ const scale=e.type==='boss'?1.4:e.type==='heavy'?1.12:1;ctx.scale(scale,scale);
+ const shape=(points,col)=>{ctx.beginPath();points.forEach((p,i)=>i?ctx.lineTo(...p):ctx.moveTo(...p));ctx.closePath();ctx.fillStyle=col;ctx.fill();ctx.strokeStyle='#151522';ctx.lineWidth=2;ctx.stroke()};
+ ctx.shadowBlur=8;ctx.shadowColor=kind.eyes;ctx.fillStyle='#02051677';ctx.beginPath();ctx.ellipse(0,0,25,5,0,0,7);ctx.fill();
+ if(kind.shape===1){shape([[-23,-56],[-20,-86],[-7,-104],[10,-104],[25,-77],[27,-39],[18,-10],[-20,-10],[-30,-32]],kind.body);shape([[-20,-81],[-30,-109],[-4,-91],[13,-94],[30,-111],[22,-80]],'#473047')}
+ else if(kind.shape===0){shape([[-20,-51],[-28,-74],[-4,-88],[23,-73],[28,-40],[16,-24],[-20,-27]],kind.body);for(const side of [-1,1])shape([[side*18,-42],[side*42,-23],[side*37,-3],[side*19,-14]],'#43566b')}
+ else if(kind.shape===2){shape([[-18,-80],[0,-114],[18,-80],[21,-12],[-21,-12]],kind.body);shape([[-18,-80],[0,-124],[18,-80]],'#344358')}
+ else if(kind.shape===3){for(let i=0;i<5;i++){let a=elapsed*.5+i*1.256;ctx.fillStyle='#704c83';ctx.beginPath();ctx.arc(Math.cos(a)*26,-64+Math.sin(a)*23,12,0,7);ctx.fill()}shape([[-26,-84],[0,-107],[26,-82],[23,-40],[4,-19],[-25,-41]],kind.body)}
+ else {shape([[-28,-69],[-16,-98],[8,-101],[29,-69],[19,-24],[-20,-24]],kind.body);for(let i=0;i<4;i++){ctx.fillStyle=kind.eyes;ctx.globalAlpha=.45;ctx.beginPath();ctx.arc(Math.sin(elapsed+i)*22,-91+i*14,3+i,0,7);ctx.fill()}ctx.globalAlpha=1}
+ ctx.fillStyle=kind.eyes;ctx.fillRect(-14,-70,10,6);ctx.fillRect(6,-70,10,6);ctx.fillStyle='#191626';ctx.fillRect(-9,-69,3,4);ctx.fillRect(10,-69,3,4);ctx.shadowBlur=0;ctx.restore();
+}
+
 function createFoe(x,type='curse'){
  const hp=type==='dummy'?99999:type==='heavy'?200+chapter*60:110+chapter*38;
- return {x,y:G-74,w:40,h:74,hp,max:hp,type,attack:1,stun:0,dead:false,warning:0,windup:false,recover:0,phase:1};
+ return {x,y:G-74,w:40,h:74,hp,max:hp,type,kind:curseKind(x,type),attack:1,stun:0,dead:false,warning:0,windup:false,recover:0,phase:1};
 }
 function resetTask(){
  const q=world.task={hits:0,guards:0,counters:0,civilian:{x:240,hp:120,active:false},seals:[false,false,false],clues:[false,false,false],time:0,barrier:250,waveClock:4,waves:0,failures:0};
@@ -177,7 +236,7 @@ function resetTask(){
  if(mission===1)for(let i=0;i<9;i++)world.enemies.push(createFoe(530+i*310,i%3===0?'heavy':'curse'));
  if(mission===2||mission===3)for(let i=0;i<3;i++)for(let j=0;j<3;j++)world.enemies.push(createFoe(680+i*870+j*85,j===2?'heavy':'curse'));
  if(mission===5)spawnBoss();
- player.x=150;player.y=G-86;player.vy=0;player.stamina=100;player.counter=0;player.guard=0;
+ player.x=150;player.y=G-86;player.vy=0;player.vx=0;player.slide=0;player.crouch=false;player.stamina=100;player.counter=0;player.guard=0;
  cam=0;save();
 }
 function nearby(x,range=210){return world.enemies.filter(e=>!e.dead&&e.type!=='dummy'&&Math.abs(e.x-x)<range)}
@@ -275,7 +334,8 @@ function punch(){if(!playing||paused||player.attack>0||player.stamina<13)return;
 function damage(e,n){if(e.dead)return;if(e.type==='boss'&&e.shield>0&&!e.broken){e.shield=Math.max(0,e.shield-n*.8);if(e.shield===0){e.broken=5;setNotice('SHIELD BROKEN · ATTACK!')}return}if(e.type==='dummy'){e.stun=.15;return}e.hp-=n;e.stun=e.type==='boss'?.08:.28;e.x=clamp(e.x+player.face*15,25,WIDTH-50);for(let i=0;i<9;i++)world.particles.push({x:e.x+16,y:e.y+18,vx:(Math.random()-.5)*210,vy:-Math.random()*200,t:.35,color:personFor(player.id).aura});if(e.type==='boss'&&player.id==='gojo'&&chapter===4&&e.hp<=e.max*.17){e.hp=0;e.dead=true;player.hp=0;setNotice('SUKUNA · THE FATAL REVERSAL');checkMission();return}if(e.hp<=0){e.dead=true;world.chapterKills++;player.stats.kills++;player.sideStats.kills++;player.xp+=30;if(e.type==='boss')setNotice('BOSS DEFEATED · '+e.name);checkMission()}}
 function useSkill(){if(!playing||paused)return;if(!player.unlocks.technique){setNotice('Unlock technique in Skill Tree');return}if(player.ce<38||player.stamina<20){setNotice('Need 38 CE and 20 stamina');return}player.ce-=38;player.stamina-=20;let n=0;for(const e of [...world.enemies])if(!e.dead&&Math.abs(e.x-player.x)<205){damage(e,75+player.level*4);n++}setNotice(n?personFor(player.id).skill+' · '+n+' hits':'TECHNIQUE MISSED')}
 function ultimate(){if(!playing||paused)return;if(!player.unlocks.ultimate||player.ce<90||player.stamina<40){setNotice('Ultimate needs skill unlock, 90 CE and 40 stamina');return}player.ce-=90;player.stamina-=40;for(const e of [...world.enemies])if(!e.dead&&Math.abs(e.x-player.x)<330)damage(e,170+player.level*10);setNotice(personFor(player.id).ultimate)}
-function dash(){if(!playing||paused||player.stamina<26)return;player.stamina-=26;player.dash=.28;player.counter=0}
+function beginSlide(){if(!playing||paused||!player.grounded||player.slide>0||player.dash>0||player.stamina<20||Math.abs(player.vx||0)<110)return;player.stamina-=20;player.slide=.54;player.slideDir=Math.sign(player.vx)||player.face;player.vx=player.slideDir*530;player.crouch=true;for(let i=0;i<8;i++)world.particles.push({x:player.x,y:G-9,vx:(Math.random()-.5)*150,vy:-Math.random()*90,t:.3,color:'#aeb5c6'})}
+function dash(){if(!playing||paused||player.slide>0||player.dash>0||player.stamina<23)return;player.stamina-=23;player.dash=.24;player.dashDir=player.face||1;player.vx=player.dashDir*780;player.counter=0}
 function jump(){if(!playing||paused)return;if(player.grounded||player.jumps<(player.unlocks.airStep?2:1)){player.vy=-520;player.grounded=false;player.jumps=(player.jumps||0)+1}}
 function keyDown(e){const k=e.key.toLowerCase();
  if(ui==='title'&&!['INPUT','SELECT'].includes(document.activeElement.tagName)){const ids=Object.keys(PEOPLE);if(k==='a'||k==='arrowleft'){selected=ids[(ids.indexOf(selected)+ids.length-1)%ids.length];renderTitle()}if(k==='d'||k==='arrowright'){selected=ids[(ids.indexOf(selected)+1)%ids.length];renderTitle()}if(k==='enter')begin(selected,false);return}
@@ -284,19 +344,25 @@ function keyDown(e){const k=e.key.toLowerCase();
  if(k==='escape'){if(paused)hideModal();else showPause();return}
  if(k==='tab'){if(!paused)showJournal();return}
  if(paused)return;keys[k]=true;
- if(!e.repeat){if(k===' '||k==='w'||k==='arrowup')jump();if(k==='shift')dash();if(k==='q')guard();if(k==='j'||k==='z')punch();if(k==='k')useSkill();if(k==='l')ultimate();if(k==='e')interact()}
+ if(!e.repeat){if(k===' '||k==='w'||k==='arrowup')jump();if(k==='shift')dash();if(k==='c'||k==='control'){if(Math.abs(player.vx||0)>110)beginSlide();else player.crouch=true}if(k==='q')guard();if(k==='j'||k==='z')punch();if(k==='k')useSkill();if(k==='l')ultimate();if(k==='e')interact()}
 }
-addEventListener('keydown',keyDown);addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);
+addEventListener('keydown',keyDown);addEventListener('keyup',e=>{keys[e.key.toLowerCase()]=false;if((e.key.toLowerCase()==='c'||e.key.toLowerCase()==='control')&&player)player.crouch=false});
 addEventListener('blur',()=>{for(const k in keys)keys[k]=false});
 $('journalBtn').onclick=()=>showJournal();$('pauseBtn').onclick=()=>showPause();
 document.querySelectorAll('[data-hold]').forEach(b=>{b.addEventListener('pointerdown',e=>{e.preventDefault();keys[b.dataset.hold]=true;if(b.dataset.hold==='j')punch()});for(const type of ['pointerup','pointercancel','pointerleave'])b.addEventListener(type,()=>keys[b.dataset.hold]=false)});
-document.querySelectorAll('[data-press]').forEach(b=>b.addEventListener('pointerdown',e=>{e.preventDefault();const a=b.dataset.press;if(a==='jump')jump();if(a==='dash')dash();if(a==='guard')guard();if(a==='skill')useSkill();if(a==='interact')interact()}));
+document.querySelectorAll('[data-press]').forEach(b=>b.addEventListener('pointerdown',e=>{e.preventDefault();const a=b.dataset.press;if(a==='jump')jump();if(a==='dash')dash();if(a==='slide')beginSlide();if(a==='crouch')player.crouch=!player.crouch;if(a==='guard')guard();if(a==='skill')useSkill();if(a==='interact')interact()}));
 function step(dt){
  if(!playing||paused)return;elapsed+=dt;player.stats.playSeconds+=dt;
  player.attack=Math.max(0,(player.attack||0)-dt);player.dash=Math.max(0,(player.dash||0)-dt);player.inv=Math.max(0,(player.inv||0)-dt);player.guard=Math.max(0,(player.guard||0)-dt);player.counter=Math.max(0,(player.counter||0)-dt);
  player.stamina=clamp((player.stamina??100)+17*dt,0,100);player.ce=clamp(player.ce+(player.unlocks.control?8:2)*dt,0,100);
- const dir=(keys.d||keys.arrowright?1:0)-(keys.a||keys.arrowleft?1:0);if(dir)player.face=dir;
- player.x=clamp(player.x+dir*(player.dash>0?740:245)*dt,25,WIDTH-40);player.vy=(player.vy||0)+1250*dt;player.y+=player.vy*dt;
+ const dir=(keys.d||keys.arrowright?1:0)-(keys.a||keys.arrowleft?1:0);if(dir&&player.slide<=0&&player.dash<=0)player.face=dir;
+ player.slide=Math.max(0,(player.slide||0)-dt);
+ const low=!!(keys.c||keys.control||keys.arrowdown||keys.s||player.crouch);
+ player.crouch=player.slide>0||low;
+ const target=player.slide>0?player.slideDir*515:player.dash>0?(player.dashDir||player.face)*780:dir*(low?100:245);
+ const response=player.slide>0?3:player.dash>0?35:dir?13:9;
+ player.vx=(player.vx||0)+(target-(player.vx||0))*Math.min(1,dt*response);
+ player.x=clamp(player.x+player.vx*dt,25,WIDTH-40);player.vy=(player.vy||0)+1250*dt;player.y+=player.vy*dt;
  if(player.y>=G-86){player.y=G-86;player.vy=0;player.grounded=true;player.jumps=0}
  cam+=(clamp(player.x-440,0,WIDTH-W)-cam)*Math.min(1,5*dt);
  const q=world.task;
@@ -317,7 +383,7 @@ function step(dt){
    }continue}
   if(e.recover>0)continue;
   if(dist<reach+35&&e.attack<=0){e.windup=true;e.warning=e.type==='boss'?.95:.7}
-  else if(dist<650||mission===4||mission===1&&q.civilian.active)e.x=clamp(e.x+Math.sign(target-e.x)*(e.type==='heavy'?83:e.type==='boss'?90:115)*dt,25,WIDTH-70);
+  else if(dist<650||mission===4||mission===1&&q.civilian.active)e.x=clamp(e.x+Math.sign(target-e.x)*(e.kind?.speed||110)*dt,25,WIDTH-70);
  }
  if(mission===1){const n=q.civilian;if(!n.active&&Math.abs(player.x-n.x)<110){n.active=true;setNotice('ESCORT STARTED')}if(n.active){if(player.x>n.x+70&&player.x<n.x+480&&!nearby(n.x,110).length)n.x+=92*dt;if(n.hp<=0){q.failures++;n.x=240;n.hp=120;n.active=false;player.x=170;setNotice('CIVILIAN LOST · RESTART ESCORT')}if(n.x>=3100){advance();return}}}
  if(mission===4){q.time+=dt;q.waveClock-=dt;if(q.waveClock<=0){q.waveClock=Math.max(5,11-chapter);q.waves++;for(let i=0;i<3+Math.min(q.waves,3);i++)world.enemies.push(createFoe(870+i*150,i%2?'curse':'heavy'));setNotice('WAVE '+q.waves)}if(q.barrier<=0){q.failures++;q.time=0;q.barrier=250;q.waveClock=4;world.enemies=[];setNotice('BARRIER DESTROYED · RESTART')}if(q.time>=75){advance();return}}
@@ -361,9 +427,9 @@ function drawWorld(){
  }
  for(const pl of world.platforms){if(pl.x+pl.w<cam-80||pl.x>cam+W+80)continue;ctx.fillStyle='#45455a';ctx.fillRect(pl.x,pl.y,pl.w,14);ctx.fillStyle='#958a9d';ctx.fillRect(pl.x,pl.y,pl.w,3)}
  for(const it of world.items)if(!it.taken){const x=it.x,y=it.y+Math.sin(elapsed*3+it.x)*5;ctx.shadowColor='#a8d9ff';ctx.shadowBlur=15;ctx.fillStyle='#a8dcff';poly([[x,y-13],[x+9,y],[x,y+13],[x-9,y]],'#9adefc');ctx.shadowBlur=0}
- for(const e of world.enemies){if(e.dead||e.x<cam-100||e.x>cam+W+100)continue;ctx.fillStyle='#302639';ctx.fillRect(e.x,e.y,e.w,e.h);ctx.fillStyle=e.type==='boss'?'#c25a84':e.type==='elite'?'#bc8bef':'#6587a2';ctx.fillRect(e.x+5,e.y+6,e.w-10,e.h-22);ctx.fillStyle='#f6a5bf';ctx.fillRect(e.x+9,e.y+13,7,5);ctx.fillRect(e.x+e.w-17,e.y+13,7,5);
+ for(const e of world.enemies){if(e.dead||e.x<cam-100||e.x>cam+W+100)continue;drawCurse(e);
  if(e.warning>0){ctx.fillStyle='#ff697b';ctx.globalAlpha=.65+.3*Math.sin(elapsed*22);ctx.fillRect(e.x-38,G-8,e.type==='boss'?178:130,8);ctx.globalAlpha=1;ctx.font='bold 11px monospace';ctx.fillStyle='#ffe2e5';ctx.fillText('INCOMING STRIKE',e.x-23,e.y-37)}if(e.type==='boss'||e.type==='elite'){ctx.fillStyle='#100f21';ctx.fillRect(e.x-10,e.y-21,e.w+20,9);ctx.fillStyle='#d36dc2';ctx.fillRect(e.x-10,e.y-21,(e.w+20)*clamp(e.hp/e.max,0,1),9);ctx.fillStyle='#fff';ctx.textAlign='center';ctx.font='bold 12px system-ui';ctx.fillText(e.name||'ELITE CURSE',e.x+e.w/2,e.y-29)}}
- drawTaskProps();if(playing)drawPerson(ctx,player.x+18,player.y+84,personFor(player.id),.65,elapsed*13*(keys.d||keys.a?1:.05));
+ drawTaskProps();if(playing)drawPersonRefined(ctx,player.x+18,player.y+84,personFor(player.id),.65,elapsed*13*(keys.d||keys.a?1:.05));
  for(const p of world.particles){ctx.globalAlpha=clamp(p.t*2,0,1);ctx.fillStyle=p.color;ctx.fillRect(p.x,p.y,5,5)}ctx.globalAlpha=1;
  if(missionType()==='explore'){ctx.fillStyle='#bffbea';ctx.font='bold 13px monospace';ctx.fillText('◆ OBJECTIVE',1700,G-95)}
  ctx.restore();
